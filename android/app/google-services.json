@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "545739143767",
+    "project_id": "bhajantracker",
+    "storage_bucket": "bhajantracker.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:545739143767:android:b28bc1c671f71f36150112",
+        "android_client_info": {
+          "package_name": "co.sith.bhajantracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "545739143767-9egs8lafacoah6i8fj396fop2iprq9am.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcPpUoCHn1DbAIOPWJ92ZMQ5-3EjPePM8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "545739143767-9egs8lafacoah6i8fj396fop2iprq9am.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
