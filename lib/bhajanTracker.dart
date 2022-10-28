@@ -101,19 +101,18 @@ class _BhajanTrackState extends State<BhajanTrack> {
                 },
                 onDaySelected: (selectedDay, focusedDay) {
                   if (!isSameDay(_selectedDay, selectedDay)) {
-                    setState(
-                      () {
+
                         _focusedDay = focusedDay;
                         _selectedDay = selectedDay;
                         final user = _auth.signInAnonymously();
                         _firestore.collection('dailytrack').add({
                           'bhajan': true,
-                          'timestamp':  DateFormat('dd-MM-yyyy').format(DateTime.now()),
+                          'timestamp':  DateFormat('dd-MM-yyyy').format(selectedDay),
                         });
                         print("hello$_firestore");
                         //_selectedEvents = _getEventsForDay(selectedDay);
-                      },
-                    );
+
+
                   }
                 },
               ),
