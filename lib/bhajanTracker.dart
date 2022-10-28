@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 TextStyle kGoogleStyleTexts = GoogleFonts.openSans(
@@ -107,7 +108,7 @@ class _BhajanTrackState extends State<BhajanTrack> {
                         final user = _auth.signInAnonymously();
                         _firestore.collection('dailytrack').add({
                           'bhajan': true,
-                          'timestamp': DateTime.now(),
+                          'timestamp':  DateFormat('dd-MM-yyyy').format(DateTime.now()),
                         });
                         print("hello$_firestore");
                         //_selectedEvents = _getEventsForDay(selectedDay);
