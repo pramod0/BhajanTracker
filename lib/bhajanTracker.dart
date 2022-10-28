@@ -1,9 +1,10 @@
+//import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 TextStyle kGoogleStyleTexts = GoogleFonts.openSans(
@@ -24,7 +25,7 @@ class _BhajanTrackState extends State<BhajanTrack> {
       DateTime.now().year, DateTime.now().month, DateTime.now().day - 1);
   DateTime _focusedDay = DateTime.utc(
       DateTime.now().year, DateTime.now().month, DateTime.now().day - 1);
-  CalendarFormat _calendarFormat = CalendarFormat.month;
+  CalendarFormat _calendarFormat = CalendarFormat.week;
 
   Color hexToColor(String code) {
     return Color(int.parse(code.substring(1, 7), radix: 16) + 0xFF000000);
@@ -68,7 +69,28 @@ class _BhajanTrackState extends State<BhajanTrack> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 5),
               child: TableCalendar(
+                calendarBuilders: CalendarBuilders(
+
+                ),
+
                 calendarStyle: CalendarStyle(
+                  todayDecoration: BoxDecoration(
+                    color: hexToColor("#FFBE68"),
+                    shape: BoxShape.circle,
+                  ),
+                  outsideDaysVisible: true,
+                  outsideDecoration: BoxDecoration(
+                    color: hexToColor("#FEAE30"),
+                  ),
+                  holidayDecoration: BoxDecoration(
+                    color: hexToColor("#FEAE30"),
+                  ),
+                    weekendDecoration: BoxDecoration(
+                      color: hexToColor("#FEAE30"),
+                    ),
+                    defaultDecoration: BoxDecoration(
+                      color: hexToColor("#FEAE30"),
+                    ),
                     selectedDecoration: BoxDecoration(
                       color: hexToColor("#FFBE68"),
                       shape: BoxShape.rectangle,
@@ -88,7 +110,7 @@ class _BhajanTrackState extends State<BhajanTrack> {
                         fontSize: 20)),
                 firstDay: DateTime.utc(2022, 01, 01),
                 lastDay: DateTime.utc(DateTime.now().year, DateTime.now().month,
-                    DateTime.now().day - 1),
+                    DateTime.now().day),
                 focusedDay: _selectedDay,
                 calendarFormat: _calendarFormat,
                 onFormatChanged: (format) {
@@ -100,19 +122,39 @@ class _BhajanTrackState extends State<BhajanTrack> {
                   return isSameDay(_selectedDay, day);
                 },
                 onDaySelected: (selectedDay, focusedDay) {
-                  if (!isSameDay(_selectedDay, selectedDay)) {
-
+                  if (!isSameDay(_selectedDay, selectedDay) &&
+                          selectedDay ==
+                              DateTime.utc(DateTime.now().year,
+                                  DateTime.now().month, (DateTime.now().day)) ||
+                      selectedDay ==
+                          DateTime.utc(DateTime.now().year,
+                              DateTime.now().month, (DateTime.now().day - 1))) {
+                    setState(
+                      () {
                         _focusedDay = focusedDay;
                         _selectedDay = selectedDay;
                         final user = _auth.signInAnonymously();
+                        print(
+                            _firestore.doc("dailytrack/ybJWOpm4Gbe4y6dKncFA"));
                         _firestore.collection('dailytrack').add({
                           'bhajan': true,
-                          'timestamp':  DateFormat('dd-MM-yyyy').format(selectedDay),
+                          'bhajanTS': DateTime.now(),
+                          'swadhyay': true,
+                          'swadhyayTS': DateTime.now(),
+                          'pooja': true,
+                          'poojaTS': DateTime.now(),
                         });
+                        // _db
+                        //     .collection('jobs')
+                        //     .where("categoryId", isEqualTo: categoryId)
+                        //     .getDocuments()
+                        //     .then((v) {
+                        // try{
+                        // v.documents[0].data.update('isApproved', (bool) => true,ifAbsent: ()=>true);
                         print("hello$_firestore");
                         //_selectedEvents = _getEventsForDay(selectedDay);
-
-
+                      },
+                    );
                   }
                 },
               ),
