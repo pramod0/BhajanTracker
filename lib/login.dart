@@ -42,6 +42,7 @@ class _LoginState extends State<Login> {
                 height: 48.0,
               ),
               TextField(
+                style: TextStyle(color: Colors.white),
                 keyboardType: TextInputType.emailAddress,
                 textAlign: TextAlign.center,
                 onChanged: (value) {

@@ -78,7 +78,7 @@ class _BhajanTrackState extends State<BhajanTrack> {
             }
             final data = snapshot.data?.docs;
             for (var maps in data!) {
-              print (maps.get("Date"));
+              print (maps.get("date"));
             }
             return Column(children: [
               const SizedBox(
@@ -105,39 +105,8 @@ class _BhajanTrackState extends State<BhajanTrack> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
                     child: TableCalendar(
-                      calendarBuilders: CalendarBuilders(),
-                      calendarStyle: CalendarStyle(
-                          todayDecoration: BoxDecoration(
-                            color: hexToColor("#FFBE68"),
-                            shape: BoxShape.circle,
-                          ),
-                          outsideDaysVisible: true,
-                          outsideDecoration: BoxDecoration(
-                            color: hexToColor("#FEAE30"),
-                            shape: BoxShape.rectangle,
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          holidayDecoration: BoxDecoration(
-                            color: hexToColor("#FEAE30"),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          weekendDecoration: BoxDecoration(
-                            color: hexToColor("#FEAE30"),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          defaultDecoration: BoxDecoration(
-                            color: hexToColor("#FEAE30"),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          selectedDecoration: BoxDecoration(
-                            color:  hexToColor("#FFBE68"),
-                            shape: BoxShape.rectangle,
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          selectedTextStyle: const TextStyle(
-                              fontWeight: FontWeight.w200,
-                              color: Colors.white,
-                              fontSize: 16)),
+
+
                       headerStyle: const HeaderStyle(
                           headerPadding: EdgeInsets.all(12),
                           rightChevronVisible: false,
@@ -176,21 +145,13 @@ class _BhajanTrackState extends State<BhajanTrack> {
                             () {
                               _focusedDay = focusedDay;
                               _selectedDay = selectedDay;
-                              print(_firestore
-                                  .doc("dailytrack/ybJWOpm4Gbe4y6dKncFA"));
+
                               _firestore.collection('dailytrack').add({
                                 'bhajan': true,
-                                'Date':DateTime.now()
+                                'date':DateFormat('dd-MM-yyyy').format(selectedDay),
+                                'user': _auth.currentUser?.email
                               });
-                              // _db
-                              //     .collection('jobs')
-                              //     .where("categoryId", isEqualTo: categoryId)
-                              //     .getDocuments()
-                              //     .then((v) {
-                              // try{
-                              // v.documents[0].data.update('isApproved', (bool) => true,ifAbsent: ()=>true);
-                              print("hello$_firestore");
-                              //_selectedEvents = _getEventsForDay(selectedDay);
+
                             },
                           );
                         }
@@ -204,15 +165,15 @@ class _BhajanTrackState extends State<BhajanTrack> {
         ));
   }
 
-// List<Map<String, String>> _getEventsForDay(DateTime day) {
-//   List<Map<String, String>> subjectAttendanceMap = [];
-//   widget.scheduleRecords?.map((record) => {
-//     if(record.date == day){
-//       // print("PRAMOD "+record.details.toString())
-//       subjectAttendanceMap.add(record.details)
-//     }
-//   }).toList();
-//
-//   return subjectAttendanceMap;
-// }
+List<Map<String, String>> _getEventsForDay(DateTime day) {
+  List<Map<String, String>> subjectAttendanceMap = [];
+  // widget.scheduleRecords?.map((record) => {
+  //   if(record.date == day){
+  //     // print("PRAMOD "+record.details.toString())
+  //     subjectAttendanceMap.add(record.details)
+  //   }
+  // }).toList();
+
+  return subjectAttendanceMap;
+}
 }
