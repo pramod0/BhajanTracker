@@ -20,7 +20,7 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: hexToColor("#f4b966"),
+      backgroundColor: hexToColor("#3F4553"),
       body: ModalProgressHUD(
         inAsyncCall: showSpinner,
         child: Padding(

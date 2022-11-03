@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'bhajanTracker.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
-import 'login.dart';
 
 class Registration extends StatefulWidget {
   static const String id = 'registration';
@@ -23,7 +22,7 @@ class _RegistrationState extends State<Registration> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: hexToColor("#f4b966"),
+      backgroundColor: hexToColor("#3F4553"),
       body: ModalProgressHUD(
         inAsyncCall: showSpinner,
         child: Padding(

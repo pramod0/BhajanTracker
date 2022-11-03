@@ -16,8 +16,6 @@ TextStyle kGoogleStyleTexts = GoogleFonts.openSans(
 
 final _firestore = FirebaseFirestore.instance;
 
-
-
 class BhajanTrack extends StatefulWidget {
   static const String id="bhajantrack";
   const BhajanTrack({super.key});
@@ -132,7 +130,7 @@ class _BhajanTrackState extends State<BhajanTrack> {
                             borderRadius: BorderRadius.circular(5),
                           ),
                           selectedDecoration: BoxDecoration(
-                            color: hexToColor("#FFBE68"),
+                            color:  hexToColor("#FFBE68"),
                             shape: BoxShape.rectangle,
                             borderRadius: BorderRadius.circular(5),
                           ),

@@ -41,7 +41,7 @@ class _WelcomeState extends State<Welcome>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: hexToColor("#f4b966"),
+      backgroundColor: hexToColor("#3F4553"),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
