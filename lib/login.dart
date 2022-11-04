@@ -55,6 +55,7 @@ class _LoginState extends State<Login> {
                 height: 8.0,
               ),
               TextField(
+                style: TextStyle(color: Colors.white),
                 obscureText: true,
                 textAlign: TextAlign.center,
                 onChanged: (value) {
