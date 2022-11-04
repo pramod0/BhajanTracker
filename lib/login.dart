@@ -42,7 +42,6 @@ class _LoginState extends State<Login> {
                 height: 48.0,
               ),
               TextField(
-                style: TextStyle(color: Colors.white),
                 keyboardType: TextInputType.emailAddress,
                 textAlign: TextAlign.center,
                 onChanged: (value) {
@@ -50,6 +49,9 @@ class _LoginState extends State<Login> {
                 },
                 decoration:
                 kTextFieldDecoration.copyWith(hintText: 'Enter your email'),
+                style: TextStyle(
+                  color: Colors.white70,
+                ),
               ),
               SizedBox(
                 height: 8.0,
@@ -81,11 +83,16 @@ class _LoginState extends State<Login> {
                       Navigator.pushNamed(context, BhajanTrack.id);
                     }
 
+
                     setState(() {
                       showSpinner = false;
                     });
                   } catch (e) {
                     print(e);
+                    setState(() {
+                      showSpinner = false;
+                      password="";
+                    });
                   }
                 },
               ),

@@ -51,6 +51,9 @@ class _RegistrationState extends State<Registration> {
                 },
                 decoration:
                 kTextFieldDecoration.copyWith(hintText: 'Enter your email'),
+                style: TextStyle(
+                  color: Colors.white70,
+                ),
               ),
               SizedBox(
                 height: 8.0,
@@ -63,6 +66,9 @@ class _RegistrationState extends State<Registration> {
                 },
                 decoration: kTextFieldDecoration.copyWith(
                     hintText: 'Enter your password'),
+                style: TextStyle(
+                  color: Colors.white70,
+                ),
               ),
               const SizedBox(
                 height: 24.0,
