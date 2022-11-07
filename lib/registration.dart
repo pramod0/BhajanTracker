@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:bhajantracker/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'bhajanTracker.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 
 class Registration extends StatefulWidget {
@@ -85,7 +85,7 @@ class _RegistrationState extends State<Registration> {
                         showSpinner = true;
                       });
                       try {
-                        final newUser = await _auth.createUserWithEmailAndPassword(
+                        await _auth.createUserWithEmailAndPassword(
                             email: email, password: password,);
                         Navigator.pushNamed(context, BhajanTrack.id);
                         setState(() {
