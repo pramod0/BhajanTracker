@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bhajantracker/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'bhajanTracker.dart';
+import 'package:bhajantracker/home.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 
@@ -26,7 +26,7 @@ class _RegistrationState extends State<Registration> {
       body: ModalProgressHUD(
         inAsyncCall: showSpinner,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -40,7 +40,7 @@ class _RegistrationState extends State<Registration> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 48.0,
               ),
               TextField(
@@ -51,11 +51,11 @@ class _RegistrationState extends State<Registration> {
                 },
                 decoration:
                 kTextFieldDecoration.copyWith(hintText: 'Enter your email'),
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white70,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 8.0,
               ),
               TextField(
@@ -66,7 +66,7 @@ class _RegistrationState extends State<Registration> {
                 },
                 decoration: kTextFieldDecoration.copyWith(
                     hintText: 'Enter your password'),
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white70,
                 ),
               ),
@@ -86,8 +86,9 @@ class _RegistrationState extends State<Registration> {
                       });
                       try {
                         await _auth.createUserWithEmailAndPassword(
-                            email: email, password: password,);
-                        Navigator.pushNamed(context, BhajanTrack.id);
+                            email: email, password: password,
+                        );
+                        Navigator.pushNamed(context, Home.id);
                         setState(() {
                           showSpinner = false;
                         });

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'bhajanTracker.dart';
 import 'package:bhajantracker/constants.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+
+import 'home.dart';
 
 class Login extends StatefulWidget {
 
@@ -80,7 +81,7 @@ class _LoginState extends State<Login> {
                     final user = await _auth.signInWithEmailAndPassword(
                         email: email, password: password);
                     if (user != null) {
-                      Navigator.pushNamed(context, BhajanTrack.id);
+                      Navigator.pushNamed(context, Home.id);
                     }
 
 
