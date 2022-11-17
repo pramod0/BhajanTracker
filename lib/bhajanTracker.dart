@@ -18,6 +18,7 @@ TextStyle kGoogleStyleTexts = GoogleFonts.openSans(
     fontWeight: FontWeight.w600, color: Colors.black, fontSize: 20.0);
 
 final _firestore = FirebaseFirestore.instance;
+int duration = 1;
 
 class BhajanTrack extends StatefulWidget {
   static const String id = "bhajantrack";
@@ -181,9 +182,12 @@ class _BhajanTrackState extends State<BhajanTrack> {
                               }
                               return false;
                             },
+
                             onDaySelected: (selectedDay, focusedDay) {
                               print("selectedDay: " + selectedDay.toString());
                               print("focusedDay: " + focusedDay.toString());
+
+                              _selectedDay = selectedDay;
 
                               String selectedDayString =
                                   DateFormat('dd-MM-yyyy')
@@ -213,12 +217,8 @@ class _BhajanTrackState extends State<BhajanTrack> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Row(
-            children: [
-              TimeButton(duration: 1,),
-              TimeButton(duration: 2,),
-            ],
-          ),
+          TimeButton(duration: 1,),
+          TimeButton(duration: 2,),
           TimeButton(duration: 5,),
           TimeButton(duration: 10,),
           TimeButton(duration: 15,),
@@ -233,9 +233,9 @@ class _BhajanTrackState extends State<BhajanTrack> {
       ),
       actions: <Widget>[
         TextButton(
+          child: const Text('Add'),
           onPressed: () async {
-            String? docID =
-                _auth.currentUser?.uid;
+            String? docID = _auth.currentUser?.uid;
             docID =
             ("${docID!}_${DateTime.now().toString().replaceAll(" ", "_")}");
             //String? docID =DateTime.now().toString();
@@ -246,44 +246,62 @@ class _BhajanTrackState extends State<BhajanTrack> {
               'bhajan': true,
               'date': DateFormat('dd-MM-yyyy')
                   .format(_selectedDay),
-              'duration': _duration.inMinutes,
+              'duration': duration,
               'user': _auth.currentUser?.email,
               'timestamp': DateTime.now(),
             });
             Navigator.of(context).pop();
           },
-          child: const Text('Add'),
+
         ),
         TextButton(
+          child: const Text('Close'),
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: const Text('Close'),
+
         ),
       ],
     );
   }
 }
 
-class TimeButton extends StatelessWidget {
+class TimeButton extends StatefulWidget {
   int duration;
 
   TimeButton({required this.duration});
 
   @override
+  _TimeButtonState createState() => _TimeButtonState();
+}
+
+class _TimeButtonState extends State<TimeButton> {
+  bool pressed = false;
+
+  @override
   Widget build(BuildContext context) {
+
     return TextButton(
-        onPressed: (){
-          print("duration");
-        }, 
-        child: Text((duration.toString()+" min")),
-        style: ButtonStyle(
+      onPressed: (){
+        setState(() {
+          pressed = !pressed;
+          duration = widget.duration;
+        });
+
+        print("duration: "+ duration.toString());
+      },
+      child: Text((widget.duration.toString()+" min")),
+      style: ButtonStyle(
+          backgroundColor: pressed?
+          MaterialStateProperty.all(Colors.orangeAccent):
+          MaterialStateProperty.all(Colors.transparent),
           shape: MaterialStateProperty.all<OutlinedBorder>(
             RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(50),
-            side: BorderSide(color: Colors.red),
-          ),)
-        ),
+              borderRadius: BorderRadius.circular(50),
+              side: BorderSide(color: Colors.red),
+            ),)
+      ),
     );
   }
 }
+
