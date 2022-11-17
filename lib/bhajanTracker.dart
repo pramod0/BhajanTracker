@@ -1,4 +1,5 @@
 import 'dart:collection';
+
 import 'package:duration_picker/duration_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -189,12 +190,12 @@ class _BhajanTrackState extends State<BhajanTrack> {
                                         .format(selectedDay)
                                         .toString();
                               if (!(bhajanDateSet.contains(selectedDayString))) {
-                                showDurationCard = true;
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) => _buildPopupDialog(context),
+                                );
                               }
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) => _buildPopupDialog(context),
-                              );
+
 
                             },
                           ),
@@ -207,20 +208,20 @@ class _BhajanTrackState extends State<BhajanTrack> {
 
   Widget _buildPopupDialog(BuildContext context) {
     return AlertDialog(
-      title: const Text('Popup example'),
+      title: const Text('Set duration'),
       content: new Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text("Hello"),
+          Text("Hello"),Text("Hello"),Text("Hello"),TimeButton(),
         ],
       ),
       actions: <Widget>[
-        new FlatButton(
+        new TextButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
-          textColor: Theme.of(context).primaryColor,
+
           child: const Text('Close'),
         ),
       ],
@@ -228,4 +229,18 @@ class _BhajanTrackState extends State<BhajanTrack> {
   }
 
 }
+
+class TimeButton extends StatelessWidget {
+  
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+        onPressed: (){
+          print("duration");
+        }, 
+        child: Text(("1 min"))
+    );
+  }
+}
+
 
