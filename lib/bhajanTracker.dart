@@ -213,7 +213,7 @@ class _BhajanTrackState extends State<BhajanTrack> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text("Hello"),Text("Hello"),Text("Hello"),TimeButton(),
+          TimeButton(),TimeButton(),TimeButton(),TimeButton()
         ],
       ),
       actions: <Widget>[
@@ -238,7 +238,14 @@ class TimeButton extends StatelessWidget {
         onPressed: (){
           print("duration");
         }, 
-        child: Text(("1 min"))
+        child: Text(("1 min")),
+        style: ButtonStyle(
+          shape: MaterialStateProperty.all<OutlinedBorder>(
+            RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(50),
+            side: BorderSide(color: Colors.red),
+          ),)
+        ),
     );
   }
 }
