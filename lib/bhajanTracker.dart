@@ -193,13 +193,17 @@ class _BhajanTrackState extends State<BhajanTrack> {
                                   DateFormat('dd-MM-yyyy')
                                       .format(selectedDay)
                                       .toString();
-                              if (!(bhajanDateSet
-                                  .contains(selectedDayString))) {
+                              if (!(bhajanDateSet.contains(selectedDayString))) {
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) =>
                                       _buildPopupDialog(context),
                                 );
+                              } else {
+                                String errorMessage = "Already set";
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                  content: Text(errorMessage),
+                                ));
                               }
                             },
                           ),
