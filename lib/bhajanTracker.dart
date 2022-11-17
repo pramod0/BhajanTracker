@@ -30,7 +30,7 @@ class BhajanTrack extends StatefulWidget {
 class _BhajanTrackState extends State<BhajanTrack> {
   final _auth = FirebaseAuth.instance;
   late String user;
-  bool go = false;
+  bool showDurationCard = false;
 
   @override
   void initState() {
@@ -51,9 +51,9 @@ class _BhajanTrackState extends State<BhajanTrack> {
   final Duration _default = const Duration(hours: 0, minutes: 0);
 
   DateTime _selectedDay = DateTime.utc(
-      DateTime.now().year, DateTime.now().month, DateTime.now().day - 1);
+      DateTime.now().year, DateTime.now().month, DateTime.now().day );
   DateTime _focusedDay = DateTime.utc(
-      DateTime.now().year, DateTime.now().month, DateTime.now().day - 1);
+      DateTime.now().year, DateTime.now().month, DateTime.now().day );
   CalendarFormat _calendarFormat = CalendarFormat.month;
 
   Set<String> bhajanDateSet = HashSet();
@@ -182,90 +182,50 @@ class _BhajanTrackState extends State<BhajanTrack> {
                               return false;
                             },
                             onDaySelected: (selectedDay, focusedDay) {
-                              if (!isSameDay(_selectedDay, selectedDay)) {
-                                setState(
-                                  () {
-                                    _focusedDay = focusedDay;
-                                    _selectedDay = selectedDay;
+                              print("selectedDay: "+selectedDay.toString());
+                              print("focusedDay: "+focusedDay.toString());
 
-                                    // if (selectedDay ==
-                                    //         DateTime.utc(
-                                    //             DateTime.now().year,
-                                    //             DateTime.now().month,
-                                    //             (DateTime.now().day)) ||
-                                    //     selectedDay ==
-                                    //         DateTime.utc(
-                                    //             DateTime.now().year,
-                                    //             DateTime.now().month,
-                                    //             (DateTime.now().day - 1))) {
-                                    String d = DateFormat('dd-MM-yyyy')
+                              String selectedDayString = DateFormat('dd-MM-yyyy')
                                         .format(selectedDay)
                                         .toString();
-                                    if (!(bhajanDateSet.contains(d))) {
-                                      go = true;
-                                    }
-                                    //}
-                                  },
-                                );
+                              if (!(bhajanDateSet.contains(selectedDayString))) {
+                                showDurationCard = true;
                               }
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) => _buildPopupDialog(context),
+                              );
+
                             },
                           ),
-                          ((!(bhajanDateSet.contains(DateFormat('dd-MM-yyyy')
-                                          .format(_selectedDay)
-                                          .toString()))) &&
-                                      go) ==
-                                  true
-                              ? Center(
-                                  child: Column(
-                                    children: [
-                                      DurationPicker(
-                                        onChange: (val) {
-                                          _duration = val;
-                                          setState(() {
-                                            // if (_selectedDay!=) {
-                                            //   _duration = _default;
-                                            // }
-                                          });
-                                        },
-                                        duration: _duration,
-                                      ),
-                                      ElevatedButton(
-                                          onPressed: () {
-                                            String? docID =
-                                                _auth.currentUser?.uid;
-                                            docID =
-                                                ("${docID!}_${DateTime.now().toString().replaceAll(" ", "_")}");
-                                            //String? docID =DateTime.now().toString();
-                                            _firestore
-                                                .collection('dailytrack')
-                                                .doc(docID)
-                                                .set({
-                                              'bhajan': true,
-                                              'date': DateFormat('dd-MM-yyyy')
-                                                  .format(_selectedDay),
-                                              'duration': _duration.inMinutes,
-                                              'user': _auth.currentUser?.email,
-                                              'timestamp': DateTime.now(),
-                                            });
-                                            // Duration? selectedDuration = showDurationPicker(
-                                            //     context: context,
-                                            //     initialTime: const Duration(minutes: 20)) as Duration?;
-                                            //
-                                            // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                            //     content: Text('Chose duration: $selectedDuration')));
-                                          },
-                                          child: const Text(
-                                              "Set Today's Duration"))
-                                    ],
-                                  ),
-                                )
-                              : const Card(
-                                  color: Colors.red,
-                                ),
                         ])),
                       ),
                 );
               })),
     );
   }
+
+  Widget _buildPopupDialog(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Popup example'),
+      content: new Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text("Hello"),
+        ],
+      ),
+      actions: <Widget>[
+        new FlatButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          textColor: Theme.of(context).primaryColor,
+          child: const Text('Close'),
+        ),
+      ],
+    );
+  }
+
 }
+
