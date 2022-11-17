@@ -37,7 +37,6 @@ class _BhajanTrackState extends State<BhajanTrack> {
   void initState() {
     super.initState();
     getCurrentUser();
-
   }
 
   void getCurrentUser() {
@@ -52,16 +51,17 @@ class _BhajanTrackState extends State<BhajanTrack> {
   final Duration _default = const Duration(hours: 0, minutes: 0);
 
   DateTime _selectedDay = DateTime.utc(
-      DateTime.now().year, DateTime.now().month, DateTime.now().day );
+      DateTime.now().year, DateTime.now().month, DateTime.now().day);
   DateTime _focusedDay = DateTime.utc(
-      DateTime.now().year, DateTime.now().month, DateTime.now().day );
+      DateTime.now().year, DateTime.now().month, DateTime.now().day);
   CalendarFormat _calendarFormat = CalendarFormat.month;
 
   Set<String> bhajanDateSet = HashSet();
+
   // QuerySnapshot collectionReference = FirebaseFirestore.instance
   //     .collection("dailytrack")
   //     .orderBy('date', descending: true) as QuerySnapshot<Object?>;
-  var dura_date=List.generate(1, (i) => List.filled(2, null, growable: true));
+  var dura_date = List.generate(1, (i) => List.filled(2, null, growable: true));
 
   void getConsistency(AsyncSnapshot<QuerySnapshot<Object?>> snapshot) {
     final data = snapshot.data?.docs;
@@ -71,7 +71,6 @@ class _BhajanTrackState extends State<BhajanTrack> {
           "date": maps.get("date"),
           "duration": maps.get("duration").toString()
         });
-
       }
       print(consistencyList.toString());
     }
@@ -95,7 +94,7 @@ class _BhajanTrackState extends State<BhajanTrack> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: hexToColor("#4D57C8"),
+          backgroundColor: hexToColor("#4D57C8"),
           body: StreamBuilder<QuerySnapshot>(
               stream: _firestore.collection('dailytrack').snapshots(),
               builder: (context, snapshot) {
@@ -111,22 +110,22 @@ class _BhajanTrackState extends State<BhajanTrack> {
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(7),
-                        color: Colors.white,
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.grey,
-                            blurRadius: 1.0, // soften the shadow
-                            spreadRadius: 0.5, //extend the shadow
-                            offset: Offset(
-                              0.0, // Move to right 10  horizontally
-                              1.0, // Move to bottom 10 Vertically
-                            ),
-                          )
-                        ],
-                      ),
-                      child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(7),
+                      color: Colors.white,
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.grey,
+                          blurRadius: 1.0, // soften the shadow
+                          spreadRadius: 0.5, //extend the shadow
+                          offset: Offset(
+                            0.0, // Move to right 10  horizontally
+                            1.0, // Move to bottom 10 Vertically
+                          ),
+                        )
+                      ],
+                    ),
+                    child: Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 5, vertical: 5),
                         child: Column(children: [
@@ -183,24 +182,25 @@ class _BhajanTrackState extends State<BhajanTrack> {
                               return false;
                             },
                             onDaySelected: (selectedDay, focusedDay) {
-                              print("selectedDay: "+selectedDay.toString());
-                              print("focusedDay: "+focusedDay.toString());
+                              print("selectedDay: " + selectedDay.toString());
+                              print("focusedDay: " + focusedDay.toString());
 
-                              String selectedDayString = DateFormat('dd-MM-yyyy')
-                                        .format(selectedDay)
-                                        .toString();
-                              if (!(bhajanDateSet.contains(selectedDayString))) {
+                              String selectedDayString =
+                                  DateFormat('dd-MM-yyyy')
+                                      .format(selectedDay)
+                                      .toString();
+                              if (!(bhajanDateSet
+                                  .contains(selectedDayString))) {
                                 showDialog(
                                   context: context,
-                                  builder: (BuildContext context) => _buildPopupDialog(context),
+                                  builder: (BuildContext context) =>
+                                      _buildPopupDialog(context),
                                 );
                               }
-
-
                             },
                           ),
                         ])),
-                      ),
+                  ),
                 );
               })),
     );
@@ -209,38 +209,73 @@ class _BhajanTrackState extends State<BhajanTrack> {
   Widget _buildPopupDialog(BuildContext context) {
     return AlertDialog(
       title: const Text('Set duration'),
-      content: new Column(
+      content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text("Hello"),Text("Hello"),Text("Hello"),TimeButton(),
+          Row(
+            children: [
+              TimeButton(duration: 1,),
+              TimeButton(duration: 2,),
+            ],
+          ),
+          TimeButton(duration: 5,),
+          TimeButton(duration: 10,),
+          TimeButton(duration: 15,),
+          TimeButton(duration: 20,),
+          TimeButton(duration: 25,),
+          TimeButton(duration: 30,),
+          TimeButton(duration: 45,),
+          TimeButton(duration: 60,),
+
+
         ],
       ),
       actions: <Widget>[
-        new TextButton(
+        TextButton(
+          onPressed: () async {
+            String? docID =
+                _auth.currentUser?.uid;
+            docID =
+            ("${docID!}_${DateTime.now().toString().replaceAll(" ", "_")}");
+            //String? docID =DateTime.now().toString();
+            await _firestore
+                .collection('dailytrack')
+                .doc(docID)
+                .set({
+              'bhajan': true,
+              'date': DateFormat('dd-MM-yyyy')
+                  .format(_selectedDay),
+              'duration': _duration.inMinutes,
+              'user': _auth.currentUser?.email,
+              'timestamp': DateTime.now(),
+            });
+            Navigator.of(context).pop();
+          },
+          child: const Text('Add'),
+        ),
+        TextButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
-
           child: const Text('Close'),
         ),
       ],
     );
   }
-
 }
 
 class TimeButton extends StatelessWidget {
-  
+  int duration;
+
+  TimeButton({super.key,required this.duration});
+
   @override
   Widget build(BuildContext context) {
     return TextButton(
-        onPressed: (){
-          print("duration");
-        }, 
-        child: Text(("1 min"))
-    );
+        onPressed: () {
+          print(duration);
+        },
+        child: const Text(("{this.duration} min")));
   }
 }
-
-
