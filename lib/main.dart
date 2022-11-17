@@ -3,7 +3,6 @@ import 'package:bhajantracker/registration.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:bhajantracker/welcome.dart';
 import 'package:flutter/material.dart';
-import 'package:bhajantracker/home.dart';
 import 'package:intl/intl.dart';
 import 'login.dart';
 //import 'package:firebase_auth/firebase_auth.dart';
@@ -26,7 +25,6 @@ class MyApp extends StatelessWidget {
       home: Welcome(),
       routes: {
         Welcome.id: (context) => const Welcome(),
-        Home.id:(contsxt) => const Home(),
         Login.id: (context) => Login(),
         Registration.id: (context) => const Registration(),
         BhajanTrack.id: (context) => const BhajanTrack(),

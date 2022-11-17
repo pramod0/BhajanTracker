@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:bhajantracker/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:bhajantracker/home.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+
+import 'login.dart';
 
 
 class Registration extends StatefulWidget {
@@ -88,7 +89,7 @@ class _RegistrationState extends State<Registration> {
                         await _auth.createUserWithEmailAndPassword(
                             email: email, password: password,
                         );
-                        Navigator.pushNamed(context, Home.id);
+                        Navigator.pushNamed(context, Login.id);
                         setState(() {
                           showSpinner = false;
                         });

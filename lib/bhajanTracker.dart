@@ -1,5 +1,4 @@
 import 'dart:collection';
-import 'dart:ffi';
 import 'package:duration_picker/duration_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -37,7 +36,7 @@ class _BhajanTrackState extends State<BhajanTrack> {
   void initState() {
     super.initState();
     getCurrentUser();
-    //getConsistency(snapshot);
+
   }
 
   void getCurrentUser() {
