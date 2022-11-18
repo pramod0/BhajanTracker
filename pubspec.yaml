@@ -28,10 +28,11 @@ dependencies:
   firebase_auth: any
   firebase_core: any
   cloud_firestore: any
-  syncfusion_flutter_charts: any
+  fl_chart: any
   modal_progress_hud_nsn: any
   animated_text_kit: any
   duration_picker: any
+
 
 dev_dependencies:
   flutter_test:
