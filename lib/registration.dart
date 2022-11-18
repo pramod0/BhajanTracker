@@ -92,20 +92,7 @@ class _RegistrationState extends State<Registration> {
                         var user=await _auth.createUserWithEmailAndPassword(
                             email: email, password: password,
                         );
-                        var uid=user.user?.uid;
-                        String? docID = (DateTime.now().toString().replaceAll(" ", "_"));
-                        // //String? docID =DateTime.now().toString();;
-                        await _firestore.collection(uid!).doc(docID).set({
-                          'bhajan': true,
-                          'date': DateFormat('dd-MM-yyyy').format(DateTime.now()),
-                          'duration': 0,
-                          'user': _auth.currentUser?.email,
-                          'timestamp': DateTime.now(),
-                        }).then((_){
-                          print("collection created");
-                        }).catchError((_){
-                          print("an error occured");
-                        });
+
                         Navigator.pushNamed(context, Login.id);
                         setState(() {
                           showSpinner = false;
