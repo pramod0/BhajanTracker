@@ -44,6 +44,7 @@ class BhajanTrack extends StatefulWidget {
 class _BhajanTrackState extends State<BhajanTrack> {
   final _auth = FirebaseAuth.instance;
   late String user;
+  late final String uid;
   bool showDurationCard = false;
 
   @override
@@ -54,6 +55,7 @@ class _BhajanTrackState extends State<BhajanTrack> {
 
   void getCurrentUser() {
     user = (_auth.currentUser!.email) as String;
+    uid=(_auth.currentUser!.uid) as String;
   }
 
   static final Map<String, String> consistencyList = {
@@ -95,6 +97,7 @@ class _BhajanTrackState extends State<BhajanTrack> {
       if (maps.get("user").toString() == _auth.currentUser?.email) {
         bhajanDateSet.add(maps.get("date"));
 
+
         // print(maps.get("user").toString());
         // print(maps.get("date").toString());
       }
@@ -121,7 +124,7 @@ class _BhajanTrackState extends State<BhajanTrack> {
             body: Padding(
               padding: const EdgeInsets.all(8.0),
               child: StreamBuilder<QuerySnapshot>(
-                  stream: _firestore.collection('dailytrack').snapshots(),
+                  stream: _firestore.collection(uid).snapshots(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
                       return const Center(
@@ -353,11 +356,10 @@ class _BhajanTrackState extends State<BhajanTrack> {
         TextButton(
           child: const Text('Add'),
           onPressed: () async {
-            String? docID = _auth.currentUser?.uid;
-            docID =
-                ("${docID!}_${DateTime.now().toString().replaceAll(" ", "_")}");
+            var docID =
+                (DateTime.now().toString().replaceAll(" ", "_"));
             //String? docID =DateTime.now().toString();
-            _firestore.collection('dailytrack').doc(docID).set({
+            _firestore.collection(uid).doc(docID).set({
               'bhajan': true,
               'date': DateFormat('dd-MM-yyyy').format(_selectedDay),
               'duration': duration,

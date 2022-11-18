@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:bhajantracker/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 import 'login.dart';
@@ -16,6 +18,7 @@ class Registration extends StatefulWidget {
 
 class _RegistrationState extends State<Registration> {
   final _auth = FirebaseAuth.instance;
+  final _firestore=FirebaseFirestore.instance;
   bool showSpinner = false;
   late String email;
   late String password;
@@ -86,9 +89,23 @@ class _RegistrationState extends State<Registration> {
                         showSpinner = true;
                       });
                       try {
-                        await _auth.createUserWithEmailAndPassword(
+                        var user=await _auth.createUserWithEmailAndPassword(
                             email: email, password: password,
                         );
+                        var uid=user.user?.uid;
+                        String? docID = (DateTime.now().toString().replaceAll(" ", "_"));
+                        // //String? docID =DateTime.now().toString();;
+                        await _firestore.collection(uid!).doc(docID).set({
+                          'bhajan': true,
+                          'date': DateFormat('dd-MM-yyyy').format(DateTime.now()),
+                          'duration': 0,
+                          'user': _auth.currentUser?.email,
+                          'timestamp': DateTime.now(),
+                        }).then((_){
+                          print("collection created");
+                        }).catchError((_){
+                          print("an error occured");
+                        });
                         Navigator.pushNamed(context, Login.id);
                         setState(() {
                           showSpinner = false;
