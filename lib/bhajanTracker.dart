@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:bhajantracker/visualization.dart';
 import 'package:duration_picker/duration_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 //import 'package:bhajantracker/constants.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 
 import 'constants.dart';
 
@@ -59,11 +61,6 @@ class _BhajanTrackState extends State<BhajanTrack> {
 
   Set<String> bhajanDateSet = HashSet();
 
-  // QuerySnapshot collectionReference = FirebaseFirestore.instance
-  //     .collection("dailytrack")
-  //     .orderBy('date', descending: true) as QuerySnapshot<Object?>;
-  var dura_date = List.generate(1, (i) => List.filled(2, null, growable: true));
-
   void getConsistency(AsyncSnapshot<QuerySnapshot<Object?>> snapshot) {
     final data = snapshot.data?.docs;
     for (var maps in data!) {
@@ -82,13 +79,8 @@ class _BhajanTrackState extends State<BhajanTrack> {
     for (var maps in data!) {
       if (maps.get("user").toString() == _auth.currentUser?.email) {
         bhajanDateSet.add(maps.get("date"));
-
-        // print(maps.get("user").toString());
-        // print(maps.get("date").toString());
       }
-      //print("hello_${consistencyList.toString()}");
     }
-    //print("hello_${consistencyList.toString()}");
   }
 
   @override
@@ -207,6 +199,8 @@ class _BhajanTrackState extends State<BhajanTrack> {
                               }
                             },
                           ),
+                          Expanded(
+                              child: SimpleTimeSeriesChart.withSampleData())
                         ])),
                   ),
                 );
