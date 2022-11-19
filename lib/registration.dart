@@ -2,23 +2,26 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:bhajantracker/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:google_sign_in_android/google_sign_in_android.dart';
 
 import 'login.dart';
-
 
 class Registration extends StatefulWidget {
   static const String id = 'registration';
 
   const Registration({super.key});
+
   @override
   _RegistrationState createState() => _RegistrationState();
 }
 
 class _RegistrationState extends State<Registration> {
   final _auth = FirebaseAuth.instance;
-  final _firestore=FirebaseFirestore.instance;
+  final _firestore = FirebaseFirestore.instance;
+  final _googlesignin = GoogleSignIn();
   bool showSpinner = false;
   late String email;
   late String password;
@@ -54,7 +57,7 @@ class _RegistrationState extends State<Registration> {
                   email = value;
                 },
                 decoration:
-                kTextFieldDecoration.copyWith(hintText: 'Enter your email'),
+                    kTextFieldDecoration.copyWith(hintText: 'Enter your email'),
                 style: const TextStyle(
                   color: Colors.white70,
                 ),
@@ -89,9 +92,12 @@ class _RegistrationState extends State<Registration> {
                         showSpinner = true;
                       });
                       try {
-                        var user=await _auth.createUserWithEmailAndPassword(
-                            email: email, password: password,
+                        var user = await _auth.createUserWithEmailAndPassword(
+                          email: email,
+                          password: password,
                         );
+
+                        _googlesignin.signIn();
 
                         Navigator.pushNamed(context, Login.id);
                         setState(() {
