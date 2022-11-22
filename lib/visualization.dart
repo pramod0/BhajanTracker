@@ -12,7 +12,7 @@ class SimpleTimeSeriesChart extends StatelessWidget {
     return SimpleTimeSeriesChart(
       _createSampleData(),
       // Disable animations for image tests.
-      animate: true,
+      animate: false,
     );
   }
 

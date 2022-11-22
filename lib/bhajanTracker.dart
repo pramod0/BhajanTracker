@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:bhajantracker/bhajan.dart';
 import 'package:bhajantracker/visualization.dart';
 import 'package:duration_picker/duration_picker.dart';
 import 'package:flutter/material.dart';
@@ -46,12 +47,6 @@ class _BhajanTrackState extends State<BhajanTrack> {
     user = (_auth.currentUser!.email) as String;
   }
 
-  static final Map<String, String> consistencyList = {
-    "date": "",
-    "duration": ""
-  };
-  Duration _duration = const Duration(hours: 0, minutes: 0);
-  final Duration _default = const Duration(hours: 0, minutes: 0);
 
   DateTime _selectedDay = DateTime.utc(
       DateTime.now().year, DateTime.now().month, DateTime.now().day);
@@ -60,26 +55,26 @@ class _BhajanTrackState extends State<BhajanTrack> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
 
   Set<String> bhajanDateSet = HashSet();
+  List<Bhajan> bhajanList = [];
 
-  void getConsistency(AsyncSnapshot<QuerySnapshot<Object?>> snapshot) {
+  void getUsersData(snapshot) {
     final data = snapshot.data?.docs;
+    //print(data);
+    // Bhajan.fromSnapshot(data);
     for (var maps in data!) {
-      if (maps.get("user").toString() == _auth.currentUser?.email) {
-        consistencyList.addAll({
-          "date": maps.get("date"),
-          "duration": maps.get("duration").toString()
-        });
-      }
-      print(consistencyList.toString());
-    }
-  }
 
-  void getUsersData(AsyncSnapshot<QuerySnapshot<Object?>> snapshot) {
-    final data = snapshot.data?.docs;
-    for (var maps in data!) {
       if (maps.get("user").toString() == _auth.currentUser?.email) {
         bhajanDateSet.add(maps.get("date"));
+       //  Bhajan b = Bhajan.fromJson(Map<String, dynamic>.from(maps));
+       // Bhajan b = Bhajan.fromMap(maps);
+        // print(b);
       }
+      snapshot.data?.docs?.forEach((doc) {
+
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        print(Bhajan.fromMap(data));
+
+      });
     }
   }
 
@@ -88,7 +83,7 @@ class _BhajanTrackState extends State<BhajanTrack> {
     return SafeArea(
       child: Scaffold(
           backgroundColor: hexToColor("#4D57C8"),
-          body: StreamBuilder<QuerySnapshot>(
+          body: StreamBuilder(
               stream: _firestore.collection('dailytrack').snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
@@ -99,7 +94,7 @@ class _BhajanTrackState extends State<BhajanTrack> {
                   );
                 }
                 getUsersData(snapshot);
-                getConsistency(snapshot);
+
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Container(
@@ -261,6 +256,25 @@ class _BhajanTrackState extends State<BhajanTrack> {
         ),
       ],
     );
+  }
+
+  static List<charts.Series<TimeSeriesSales, DateTime>> _createBhajanData() {
+    final data = [
+      new TimeSeriesSales(new DateTime(2017, 9, 19), 5),
+      new TimeSeriesSales(new DateTime(2017, 9, 26), 25),
+      new TimeSeriesSales(new DateTime(2017, 10, 3), 100),
+      new TimeSeriesSales(new DateTime(2017, 10, 10), 75),
+    ];
+
+    return [
+      new charts.Series<TimeSeriesSales, DateTime>(
+        id: 'Sales',
+        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+        domainFn: (TimeSeriesSales sales, _) => sales.time,
+        measureFn: (TimeSeriesSales sales, _) => sales.sales,
+        data: data,
+      )
+    ];
   }
 }
 
