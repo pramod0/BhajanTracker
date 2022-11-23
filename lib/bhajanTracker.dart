@@ -54,28 +54,19 @@ class _BhajanTrackState extends State<BhajanTrack> {
       DateTime.now().year, DateTime.now().month, DateTime.now().day);
   CalendarFormat _calendarFormat = CalendarFormat.month;
 
-  Set<String> bhajanDateSet = HashSet();
-  List<Bhajan> bhajanList = [];
+  Set<String> bhajanDateSet = HashSet(); // Set to store date on which Bhajan is done
+  List<Bhajan> bhajanList = []; // List to store Bhajan object on which bhajan is done
 
   void getUsersData(snapshot) {
-    final data = snapshot.data?.docs;
-    //print(data);
-    // Bhajan.fromSnapshot(data);
-    for (var maps in data!) {
-
-      if (maps.get("user").toString() == _auth.currentUser?.email) {
-        bhajanDateSet.add(maps.get("date"));
-       //  Bhajan b = Bhajan.fromJson(Map<String, dynamic>.from(maps));
-       // Bhajan b = Bhajan.fromMap(maps);
-        // print(b);
+    snapshot.data?.docs?.forEach((doc) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      if(data['user'] == _auth.currentUser?.email) {
+        bhajanList.add(Bhajan.fromMap(data));
+        bhajanDateSet.add(data['date']);
       }
-      snapshot.data?.docs?.forEach((doc) {
-
-        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        print(Bhajan.fromMap(data));
-
-      });
-    }
+    });
+    print("BhajanList: ");
+    print(bhajanList);
   }
 
   @override
@@ -195,7 +186,8 @@ class _BhajanTrackState extends State<BhajanTrack> {
                             },
                           ),
                           Expanded(
-                              child: SimpleTimeSeriesChart.withSampleData())
+                              child: charts.TimeSeriesChart(_createBhajanData(bhajanList), animate: true,)
+                          )
                         ])),
                   ),
                 );
@@ -258,21 +250,14 @@ class _BhajanTrackState extends State<BhajanTrack> {
     );
   }
 
-  static List<charts.Series<TimeSeriesSales, DateTime>> _createBhajanData() {
-    final data = [
-      new TimeSeriesSales(new DateTime(2017, 9, 19), 5),
-      new TimeSeriesSales(new DateTime(2017, 9, 26), 25),
-      new TimeSeriesSales(new DateTime(2017, 10, 3), 100),
-      new TimeSeriesSales(new DateTime(2017, 10, 10), 75),
-    ];
-
+  static List<charts.Series<Bhajan, DateTime>> _createBhajanData(List<Bhajan> bhajanList) {
     return [
-      new charts.Series<TimeSeriesSales, DateTime>(
-        id: 'Sales',
+      charts.Series<Bhajan, DateTime>(
+        id: 'Bhajan',
         colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-        domainFn: (TimeSeriesSales sales, _) => sales.time,
-        measureFn: (TimeSeriesSales sales, _) => sales.sales,
-        data: data,
+        domainFn: (Bhajan bhajan, _) => DateFormat("dd-MM-yyyy").parse(bhajan.date),
+        measureFn: (Bhajan bhajan, _) => bhajan.duration,
+        data: bhajanList,
       )
     ];
   }

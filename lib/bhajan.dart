@@ -2,13 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
 class Bhajan {
-  bool? bhajan;
-  String? date;
-  int? duration;
-  DateTime? timestamp;
+  late bool bhajan;
+  late String date;
+  late int duration;
+  Timestamp? timestamp;
   String? user;
 
-  Bhajan({this.bhajan, this.date, this.duration, this.timestamp, this.user});
+  Bhajan({required this.bhajan,required this.date,required this.duration, this.timestamp, this.user});
 
   // Bhajan.fromSnapshot(AsyncSnapshot<QuerySnapshot> snapshot)
   //     : this.fromMap(
@@ -19,7 +19,7 @@ class Bhajan {
         bhajan = map['bhajan'],
         date = map['date'],
         duration = map['duration'],
-        timestamp = DateTime.parse(map['timestamp'].toString()),
+        timestamp = map['timestamp'],
         user = map['user'];
 
   Bhajan.fromJson(Map<String, dynamic> json) {
