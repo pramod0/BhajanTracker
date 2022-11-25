@@ -1,8 +1,6 @@
 import 'dart:collection';
 
 import 'package:bhajantracker/bhajan.dart';
-import 'package:bhajantracker/visualization.dart';
-import 'package:duration_picker/duration_picker.dart';
 import 'package:flutter/material.dart';
 
 //import 'package:firebase_core/firebase_core.dart';
@@ -188,7 +186,11 @@ class _BhajanTrackState extends State<BhajanTrack> {
                             },
                           ),
                           Expanded(
-                              child: charts.TimeSeriesChart(_createBhajanData(bhajanList), animate: true,)
+                              child: charts.TimeSeriesChart(
+                                _createBhajanData(bhajanList),
+                                animate: false,
+                                defaultRenderer: new charts.BarRendererConfig<DateTime>(),
+                              )
                           )
                         ])),
                   ),
