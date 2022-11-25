@@ -35,6 +35,7 @@ class BhajanTrack extends StatefulWidget {
 class _BhajanTrackState extends State<BhajanTrack> {
   final _auth = FirebaseAuth.instance;
   late String user;
+  late final String uid;
   bool showDurationCard = false;
 
   @override
@@ -45,6 +46,7 @@ class _BhajanTrackState extends State<BhajanTrack> {
 
   void getCurrentUser() {
     user = (_auth.currentUser!.email) as String;
+    uid=(_auth.currentUser!.uid) as String;
   }
 
 
@@ -75,7 +77,7 @@ class _BhajanTrackState extends State<BhajanTrack> {
       child: Scaffold(
           backgroundColor: hexToColor("#4D57C8"),
           body: StreamBuilder(
-              stream: _firestore.collection('dailytrack').snapshots(),
+              stream: _firestore.collection(uid).snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return const Center(
@@ -220,12 +222,10 @@ class _BhajanTrackState extends State<BhajanTrack> {
         TextButton(
           child: const Text('Add'),
           onPressed: () async {
-            String? docID = _auth.currentUser?.uid;
-            docID =
-            ("${docID!}_${DateTime.now().toString().replaceAll(" ", "_")}");
+            String? docID = DateTime.now().toString().replaceAll(" ", "_");
             //String? docID =DateTime.now().toString();
             await _firestore
-                .collection('dailytrack')
+                .collection(uid)
                 .doc(docID)
                 .set({
               'bhajan': true,
