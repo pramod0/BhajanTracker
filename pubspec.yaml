@@ -28,7 +28,10 @@ dependencies:
   firebase_auth: any
   firebase_core: any
   cloud_firestore: any
-  permission_handler: any
+  charts_flutter: ^0.12.0
+  modal_progress_hud_nsn: any
+  animated_text_kit: any
+  duration_picker: any
 
 dev_dependencies:
   flutter_test:
