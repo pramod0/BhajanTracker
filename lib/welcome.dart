@@ -59,30 +59,6 @@ class _WelcomeState extends State<Welcome>
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              // Row(
-              //   children: <Widget>[
-              //     AnimatedTextKit(
-              //       animatedTexts: [
-              //         TypewriterAnimatedText(
-              //           'Hello world!',
-              //           textStyle: const TextStyle(
-              //             fontSize: 30.0,
-              //             fontWeight: FontWeight.bold,
-              //           ),
-              //           speed: const Duration(milliseconds: 2000),
-              //         ),
-              //       ],
-              //
-              //       totalRepeatCount: 4,
-              //       pause: const Duration(milliseconds: 1000),
-              //       displayFullTextOnTap: true,
-              //       stopPauseOnTap: true,
-              //     ),
-              //   ],
-              // ),
-              const SizedBox(
-                height: 48.0,
-              ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: Material(

@@ -1,5 +1,4 @@
 import 'dart:collection';
-import 'dart:io';
 
 import 'package:bhajantracker/visualization.dart';
 import 'package:duration_picker/duration_picker.dart';
@@ -55,14 +54,14 @@ class _BhajanTrackState extends State<BhajanTrack> {
 
   void getCurrentUser() {
     user = (_auth.currentUser!.email) as String;
-    uid=(_auth.currentUser!.uid) as String;
+    uid = (_auth.currentUser!.uid) as String;
   }
 
   static final Map<String, String> consistencyList = {
     "date": "",
     "duration": ""
   };
-  Duration _duration = const Duration(hours: 0, minutes: 0);
+  final Duration _duration = const Duration(hours: 0, minutes: 0);
   final Duration _default = const Duration(hours: 0, minutes: 0);
 
   DateTime _selectedDay = DateTime.utc(
@@ -96,7 +95,6 @@ class _BhajanTrackState extends State<BhajanTrack> {
     for (var maps in data!) {
       if (maps.get("user").toString() == _auth.currentUser?.email) {
         bhajanDateSet.add(maps.get("date"));
-
 
         // print(maps.get("user").toString());
         // print(maps.get("date").toString());
@@ -136,157 +134,157 @@ class _BhajanTrackState extends State<BhajanTrack> {
                     getUsersData(snapshot);
                     getConsistency(snapshot);
                     return Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 5, vertical: 5),
-                              child: Column(children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(7),
-                                    color: Colors.white,
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color: Colors.grey,
-                                        blurRadius: 1.0, // soften the shadow
-                                        spreadRadius: 0.5, //extend the shadow
-                                        offset: Offset(
-                                          0.0, // Move to right 10  horizontally
-                                          1.0, // Move to bottom 10 Vertically
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: TableCalendar(
-                                      calendarStyle: CalendarStyle(
-                                        todayDecoration: BoxDecoration(
-                                          color: hexToColor("#FFBE68"),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        outsideDaysVisible: false,
-                                        outsideDecoration: BoxDecoration(
-                                          color: hexToColor("#FFFFFF"),
-                                        ),
-                                        holidayDecoration: BoxDecoration(
-                                          color: hexToColor("#ffffff"),
-                                        ),
-                                        weekendDecoration: BoxDecoration(
-                                          color: hexToColor("#ffffff"),
-                                        ),
-                                        defaultDecoration: BoxDecoration(
-                                          color: hexToColor("#FFFFFF"),
-                                        ),
-                                        selectedDecoration: BoxDecoration(
-                                          color: hexToColor("#ED8B00"),
-                                          shape: BoxShape.rectangle,
-                                        ),
-                                      ),
-                                      headerStyle: const HeaderStyle(
-                                          headerPadding: EdgeInsets.all(12),
-                                          rightChevronVisible: false,
-                                          leftChevronVisible: false,
-                                          formatButtonVisible: false,
-                                          titleTextStyle: TextStyle(
-                                              fontWeight: FontWeight.w400,
-                                              color: Colors.black,
-                                              fontSize: 20)),
-                                      firstDay: DateTime.utc(2022, 01, 01),
-                                      lastDay: DateTime.utc(DateTime.now().year,
-                                          DateTime.now().month, DateTime.now().day),
-                                      focusedDay: _focusedDay,
-                                      calendarFormat: _calendarFormat,
-                                      onFormatChanged: (format) {
-                                        setState(() {
-                                          _calendarFormat = format;
-                                        });
-                                      },
-                                      selectedDayPredicate: (day) {
-                                        String date = DateFormat('dd-MM-yyyy')
-                                            .format(day)
-                                            .toString();
-                                        if (bhajanDateSet.contains(date)) {
-                                          return true;
-                                        }
-                                        return false;
-                                      },
-                                      onDaySelected: (selectedDay, focusedDay) {
-                                        print("selectedDay: $selectedDay");
-                                        print("focusedDay: $focusedDay");
-
-                                        _selectedDay = selectedDay;
-                                        _focusedDay = selectedDay;
-
-                                        String selectedDayString =
-                                            DateFormat('dd-MM-yyyy')
-                                                .format(selectedDay)
-                                                .toString();
-                                        if (!(bhajanDateSet
-                                            .contains(selectedDayString))) {
-                                          showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) =>
-                                                _buildPopupDialog(context),
-                                          );
-                                        } else {
-                                          String errorMessage = "Already set";
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(
-                                            content: Text(errorMessage),
-                                          ));
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ),
-                                Center(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(7),
-                                      color: Colors.white,
-                                      boxShadow: const [
-                                        BoxShadow(
-                                          color: Colors.grey,
-                                          blurRadius: 1.0, // soften the shadow
-                                          spreadRadius: 0.5, //extend the shadow
-                                          offset: Offset(
-                                            0.0, // Move to right 10  horizontally
-                                            1.0, // Move to bottom 10 Vertically
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    child: Text(
-                                        "Your Track",
-                                        style: kGoogleStyleTexts.copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.black,
-                                          fontSize: 15.0,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(7),
-                                    color: Colors.white,
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color: Colors.grey,
-                                        blurRadius: 1.0, // soften the shadow
-                                        spreadRadius: 0.5, //extend the shadow
-                                        offset: Offset(
-                                          0.0, // Move to right 10  horizontally
-                                          1.0, // Move to bottom 10 Vertically
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: BarChartSample1(),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 5, vertical: 5),
+                        child: Column(children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7),
+                              color: Colors.white,
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.grey,
+                                  blurRadius: 1.0, // soften the shadow
+                                  spreadRadius: 0.5, //extend the shadow
+                                  offset: Offset(
+                                    0.0, // Move to right 10  horizontally
+                                    1.0, // Move to bottom 10 Vertically
                                   ),
                                 )
-                              ]));
+                              ],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: TableCalendar(
+                                calendarStyle: CalendarStyle(
+                                  todayDecoration: BoxDecoration(
+                                    color: hexToColor("#FFBE68"),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  outsideDaysVisible: false,
+                                  outsideDecoration: BoxDecoration(
+                                    color: hexToColor("#FFFFFF"),
+                                  ),
+                                  holidayDecoration: BoxDecoration(
+                                    color: hexToColor("#ffffff"),
+                                  ),
+                                  weekendDecoration: BoxDecoration(
+                                    color: hexToColor("#ffffff"),
+                                  ),
+                                  defaultDecoration: BoxDecoration(
+                                    color: hexToColor("#FFFFFF"),
+                                  ),
+                                  selectedDecoration: BoxDecoration(
+                                    color: hexToColor("#ED8B00"),
+                                    shape: BoxShape.rectangle,
+                                  ),
+                                ),
+                                headerStyle: const HeaderStyle(
+                                    headerPadding: EdgeInsets.all(12),
+                                    rightChevronVisible: false,
+                                    leftChevronVisible: false,
+                                    formatButtonVisible: false,
+                                    titleTextStyle: TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.black,
+                                        fontSize: 20)),
+                                firstDay: DateTime.utc(2022, 01, 01),
+                                lastDay: DateTime.utc(DateTime.now().year,
+                                    DateTime.now().month, DateTime.now().day),
+                                focusedDay: _focusedDay,
+                                calendarFormat: _calendarFormat,
+                                onFormatChanged: (format) {
+                                  setState(() {
+                                    _calendarFormat = format;
+                                  });
+                                },
+                                selectedDayPredicate: (day) {
+                                  String date = DateFormat('dd-MM-yyyy')
+                                      .format(day)
+                                      .toString();
+                                  if (bhajanDateSet.contains(date)) {
+                                    return true;
+                                  }
+                                  return false;
+                                },
+                                onDaySelected: (selectedDay, focusedDay) {
+                                  print("selectedDay: $selectedDay");
+                                  print("focusedDay: $focusedDay");
+
+                                  _selectedDay = selectedDay;
+                                  _focusedDay = selectedDay;
+
+                                  String selectedDayString =
+                                      DateFormat('dd-MM-yyyy')
+                                          .format(selectedDay)
+                                          .toString();
+                                  if (!(bhajanDateSet
+                                      .contains(selectedDayString))) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          _buildPopupDialog(context),
+                                    );
+                                  } else {
+                                    String errorMessage = "Already set";
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                      content: Text(errorMessage),
+                                    ));
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                          Center(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(7),
+                                color: Colors.white,
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.grey,
+                                    blurRadius: 1.0, // soften the shadow
+                                    spreadRadius: 0.5, //extend the shadow
+                                    offset: Offset(
+                                      0.0, // Move to right 10  horizontally
+                                      1.0, // Move to bottom 10 Vertically
+                                    ),
+                                  )
+                                ],
+                              ),
+                              child: Text(
+                                "Your Track",
+                                style: kGoogleStyleTexts.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.black,
+                                  fontSize: 15.0,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7),
+                              color: Colors.white,
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.grey,
+                                  blurRadius: 1.0, // soften the shadow
+                                  spreadRadius: 0.5, //extend the shadow
+                                  offset: Offset(
+                                    0.0, // Move to right 10  horizontally
+                                    1.0, // Move to bottom 10 Vertically
+                                  ),
+                                )
+                              ],
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: BarChartSample1(),
+                            ),
+                          )
+                        ]));
                   }),
             )),
       ),
@@ -356,8 +354,7 @@ class _BhajanTrackState extends State<BhajanTrack> {
         TextButton(
           child: const Text('Add'),
           onPressed: () async {
-            var docID =
-                (DateTime.now().toString().replaceAll(" ", "_"));
+            var docID = (DateTime.now().toString().replaceAll(" ", "_"));
             //String? docID =DateTime.now().toString();
             _firestore.collection(uid).doc(docID).set({
               'bhajan': true,
@@ -402,9 +399,8 @@ class _TimeButtonState extends State<TimeButton> {
           duration = widget.duration;
         });
 
-        print("duration: " + duration.toString());
+        print("duration: $duration");
       },
-      child: Text((widget.duration.toString() + " min")),
       style: ButtonStyle(
           backgroundColor: pressed
               ? MaterialStateProperty.all(Colors.deepOrangeAccent)
@@ -415,6 +411,7 @@ class _TimeButtonState extends State<TimeButton> {
               side: const BorderSide(color: Colors.red),
             ),
           )),
+      child: Text(("${widget.duration} min")),
     );
   }
 }

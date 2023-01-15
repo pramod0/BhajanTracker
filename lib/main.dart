@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Welcome(),
+      home: const Welcome(),
       routes: {
         Welcome.id: (context) => const Welcome(),
         Login.id: (context) => Login(),

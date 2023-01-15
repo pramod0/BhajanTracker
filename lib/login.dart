@@ -1,21 +1,61 @@
+import 'dart:collection';
+
 import 'package:bhajantracker/bhajanTracker.dart';
+import 'package:bhajantracker/registration.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:bhajantracker/constants.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class Login extends StatefulWidget {
-
   static const String id = 'login_screen';
+
+  const Login({super.key});
+
   @override
   _LoginState createState() => _LoginState();
 }
 
 class _LoginState extends State<Login> {
+  TextStyle kGoogleStyleTexts = GoogleFonts.nunito(
+      fontWeight: FontWeight.w600, color: Colors.black, fontSize: 20.0);
+
   bool showSpinner = false;
   final _auth = FirebaseAuth.instance;
-  late String email;
-  late String password;
+  final _firestore = FirebaseFirestore.instance;
+
+  final TextEditingController userNameController =
+      TextEditingController(text: "GK0808");
+  final TextEditingController passwordController =
+      TextEditingController(text: "gsh#RH3jA");
+  bool showspinner = false;
+  bool _showPassword = false;
+  late String code = "GK0808";
+  late String emailOrCode = "shubhamdathia7257@gmail.com";
+  late String password = "gsh#RH3jA";
+
+  Set<String> usersEmailSet = HashSet();
+  static final Map<String, String> usersDocList = {
+    "code": "",
+    "email": "",
+    "uid": ""
+  };
+
+  void _toggleVisibility() {
+    setState(() {
+      _showPassword = !_showPassword;
+    });
+  }
+
+  Future<bool> isEmail(String em) async {
+    Pattern pattern =
+        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    RegExp regex = RegExp(pattern.toString());
+    return await (regex.hasMatch(em)) ? true : false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,86 +69,207 @@ class _LoginState extends State<Login> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Flexible(
-                child: Hero(
-                  tag: 'logo',
-                  child: Container(
-                    height: 200.0,
-                    //child: Image.asset('images/logo.png'),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Sabha Code/ Email ID",
+                      style: kGoogleStyleTexts.copyWith(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                        color: hexToColor("#0091E6"),
+                      ),
+                    )),
+              ),
+              SizedBox(
+                height: 45.0,
+                child: TextFormField(
+                    textInputAction: TextInputAction.next,
+                    controller: userNameController,
+                    onSaved: (val) => emailOrCode = val!,
+                    keyboardType: TextInputType.emailAddress,
+                    style: kGoogleStyleTexts.copyWith(
+                        color: hexToColor("#0065A0"), fontSize: 15.0),
+                    maxLines: 1,
+                    decoration: InputDecoration(
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 15),
+                      border: InputBorder.none,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(
+                          color: hexToColor("#0065A0"),
+                          width: 1.0,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10.0)),
+                          borderSide: BorderSide(color: hexToColor("#0065A0"))),
+                      fillColor: const Color.fromARGB(30, 173, 205, 219),
+                      filled: true,
+                      hintText: AppStrings.userEmailHintText,
+                      hintStyle: kGoogleStyleTexts.copyWith(
+                          color: hexToColor("#5F93B1"),
+                          fontSize: 15,
+                          fontWeight: FontWeight.normal),
+                    )),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      AppStrings.userPassword,
+                      style: kGoogleStyleTexts.copyWith(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                        color: hexToColor("#0091E6"),
+                      ),
+                    )),
+              ),
+              SizedBox(
+                height: 45.0,
+                child: TextFormField(
+                  textInputAction: TextInputAction.done,
+                  textAlign: TextAlign.justify,
+                  controller: passwordController,
+                  onSaved: (val) => password = val!,
+                  keyboardType: TextInputType.text,
+                  style: kGoogleStyleTexts.copyWith(
+                      color: hexToColor("#0065A0"), fontSize: 15.0),
+                  maxLines: 1,
+                  obscureText: !_showPassword,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 15),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide: BorderSide(
+                        color: hexToColor("#0065A0"),
+                        width: 1.0,
+                      ),
+                    ),
+                    border: InputBorder.none,
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(5.0)),
+                        borderSide: BorderSide(color: hexToColor("#0065A0"))),
+                    fillColor: const Color.fromARGB(30, 173, 205, 219),
+                    suffixIcon: GestureDetector(
+                      onTap: () {
+                        _toggleVisibility();
+                      },
+                      child: Icon(
+                        _showPassword ? Icons.visibility_off : Icons.visibility,
+                        color: hexToColor("#0065A0"),
+                        size: 22,
+                      ),
+                    ),
+                    filled: true,
+                    hintText: AppStrings.userPasswordHintText,
+                    hintStyle: kGoogleStyleTexts.copyWith(
+                        color: hexToColor("#5F93B1"),
+                        fontSize: 15,
+                        fontWeight: FontWeight.normal),
                   ),
                 ),
               ),
               const SizedBox(
-                height: 48.0,
+                height: 15,
               ),
-              TextField(
-                keyboardType: TextInputType.emailAddress,
-                textAlign: TextAlign.center,
-                onChanged: (value) {
-                  email = value;
-                },
-                decoration:
-                kTextFieldDecoration.copyWith(hintText: 'Enter your email'),
-                style: const TextStyle(
-                  color: Colors.white70,
-                ),
-              ),
-              const SizedBox(
-                height: 8.0,
-              ),
-              TextField(
-                style: const TextStyle(color: Colors.white),
-                obscureText: true,
-                textAlign: TextAlign.center,
-                onChanged: (value) {
-                  password = value;
-                },
-                decoration: kTextFieldDecoration.copyWith(
-                    hintText: 'Enter your password'),
-              ),
-              const SizedBox(
-                height: 24.0,
-              ),
-              RoundedButton(
-                title: 'Log In',
-                colour: Colors.deepOrangeAccent,
-                onPressed: () async {
-                  setState(() {
-                    showSpinner = true;
-                  });
-                  try {
-                    final user = await _auth.signInWithEmailAndPassword(
-                        email: email, password: password,);
-                    _auth.setPersistence(Persistence.SESSION);
+              SizedBox(
+                height: 55,
+                width: MediaQuery.of(context).size.width,
+                child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: hexToColor("#0065A0"),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0))),
+                    onPressed: () async {
+                      setState(() {
+                        showSpinner = true;
+                      });
+                      try {
+                        bool iem=await isEmail(emailOrCode);
+                        if (kDebugMode) {
+                          print("hello$iem");
+                        }
+                        if (!iem) {
+                          await _auth
+                              .signInWithEmailAndPassword(
+                                email: emailOrCode,
+                                password: password,
+                              )
+                              .whenComplete(() => {
+                                    Navigator.pushNamed(
+                                        context, BhajanTrack.id),
+                                  },
+                          );
+                        } else {
+                          _firestore
+                              .collection("users")
+                              .get()
+                              .then((QuerySnapshot querySnapshot) async {
+                            for (var doc in querySnapshot.docs) {
+                              usersDocList.addAll({
+                                "code": doc["sabhaCode"].toString(),
+                                "email": doc["userEmailID"].toString(),
+                                "uid": doc["userUID"].toString()
+                              });
+                              if (usersDocList.containsValue(emailOrCode)) {
+                                if (kDebugMode) {
+                                  print(doc);
+                                }
+                                await _auth
+                                    .signInWithEmailAndPassword(
+                                      email: doc["userEmailID"],
+                                      password: password,
+                                    )
+                                    .whenComplete(
+                                      () => {
+                                        Navigator.pushNamed(
+                                            context, BhajanTrack.id),
+                                      },
+                                    );
+                              }
+                            }
+                          });
+                        }
+                        //_auth.setPersistence(Persistence.LOCAL);
 
-                    Navigator.pushNamed(context, BhajanTrack.id);
-                  } on FirebaseAuthException catch (e) {
-
-                    if (e.code == 'user-not-found') {
-
-                        String errorMessage = "No user exists with this email.";
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(errorMessage),
-                        ));
-
-                    } else if (e.code == 'wrong-password') {
-                      String errorMessage = "The password is incorrect.";
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text(errorMessage),
-                      ));
-                    }
-
-                  }
-                  catch ( e) {
-                    print(e);
-                  }
-                  finally{
-                    setState(() {
-                      showSpinner = false;
-                      password="";
-                    });
-                  }
-                },
+                      } on FirebaseAuthException catch (e) {
+                        if (e.code == 'user-not-found') {
+                          String errorMessage =
+                              "No user exists with this email/code.";
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(errorMessage),
+                          ));
+                        } else if (e.code == 'wrong-password') {
+                          String errorMessage = "The password is incorrect.";
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(errorMessage),
+                          ));
+                        }
+                      } catch (e) {
+                        if (kDebugMode) {
+                          print(e);
+                        }
+                      } finally {
+                        setState(() {
+                          showSpinner = false;
+                          password = "";
+                        });
+                      }
+                    },
+                    child: Text(
+                      "Login",
+                      style: kGoogleStyleTexts.copyWith(
+                          color: Colors.white, fontSize: 18.0),
+                    )),
               ),
             ],
           ),
@@ -119,7 +280,11 @@ class _LoginState extends State<Login> {
 }
 
 class RoundedButton extends StatelessWidget {
-  const RoundedButton({super.key, required this.title, required this.colour, required this.onPressed});
+  const RoundedButton(
+      {super.key,
+      required this.title,
+      required this.colour,
+      required this.onPressed});
 
   final Color colour;
   final String title;
