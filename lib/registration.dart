@@ -1,12 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:bhajantracker/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:google_sign_in_android/google_sign_in_android.dart';
 
 import 'bhajanTracker.dart';
 import 'login.dart';
@@ -17,6 +16,7 @@ class Registration extends StatefulWidget {
   const Registration({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _RegistrationState createState() => _RegistrationState();
 }
 
@@ -25,19 +25,16 @@ class _RegistrationState extends State<Registration> {
   final _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance.collection("users");
-  final _googlesignin = GoogleSignIn();
+  final _googleSignIn = GoogleSignIn();
   bool _showPassword = false;
 
-  final TextEditingController userNameController =
-      TextEditingController(text: "shubhamdathia7257@gmail.com");
+  final TextEditingController emailController =
+      TextEditingController(text: "thisamit@gmail.com");
   final TextEditingController codeController =
-      TextEditingController(text: "GK0808");
+      TextEditingController(text: "SY0406");
   final TextEditingController passwordController =
-      TextEditingController(text: "gsh#RH3jA");
+      TextEditingController(text: "amit@123");
   bool showSpinner = false;
-  late String code = "GK0808";
-  late String email = "shubhamdathia7257@gmail.com";
-  late String password = "gsh#RH3jA";
 
   void _toggleVisibility() {
     setState(() {
@@ -48,6 +45,7 @@ class _RegistrationState extends State<Registration> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: hexToColor("#3F4553"),
       body: ModalProgressHUD(
         inAsyncCall: showSpinner,
@@ -74,7 +72,7 @@ class _RegistrationState extends State<Registration> {
                             ),
                           )),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 15,
                     ),
                     Padding(
@@ -95,10 +93,19 @@ class _RegistrationState extends State<Registration> {
                       child: TextFormField(
                           textInputAction: TextInputAction.next,
                           controller: codeController,
-                          onSaved: (val) => code = val!,
+                          onSaved: (val) => {
+                                setState(
+                                  () {
+                                    if (kDebugMode) {
+                                      print("code$val");
+                                    }
+                                    codeController.text = val!;
+                                  },
+                                ),
+                              },
                           keyboardType: TextInputType.text,
                           style: kGoogleStyleTexts.copyWith(
-                              color: hexToColor("#0065A0"), fontSize: 15.0),
+                              color: hexToColor("#ffffff"), fontSize: 15.0),
                           maxLines: 1,
                           decoration: InputDecoration(
                             contentPadding:
@@ -145,11 +152,17 @@ class _RegistrationState extends State<Registration> {
                       height: 45.0,
                       child: TextFormField(
                           textInputAction: TextInputAction.next,
-                          controller: userNameController,
-                          onSaved: (val) => email = val!,
+                          controller: emailController,
+                          onSaved: (val) => {
+                                setState(
+                                  () {
+                                    emailController.text = val!;
+                                  },
+                                ),
+                              },
                           keyboardType: TextInputType.emailAddress,
                           style: kGoogleStyleTexts.copyWith(
-                              color: hexToColor("#0065A0"), fontSize: 15.0),
+                              color: hexToColor("#ffffff"), fontSize: 15.0),
                           maxLines: 1,
                           decoration: InputDecoration(
                             contentPadding:
@@ -198,10 +211,19 @@ class _RegistrationState extends State<Registration> {
                         textInputAction: TextInputAction.done,
                         textAlign: TextAlign.justify,
                         controller: passwordController,
-                        onSaved: (val) => password = val!,
+                        onSaved: (val) => {
+                          setState(
+                            () {
+                              if (kDebugMode) {
+                                print("pass$val");
+                              }
+                              passwordController.text = val!;
+                            },
+                          ),
+                        },
                         keyboardType: TextInputType.text,
                         style: kGoogleStyleTexts.copyWith(
-                            color: hexToColor("#0065A0"), fontSize: 15.0),
+                            color: hexToColor("#ffffff"), fontSize: 15.0),
                         maxLines: 1,
                         obscureText: !_showPassword,
                         decoration: InputDecoration(
@@ -242,62 +264,66 @@ class _RegistrationState extends State<Registration> {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    SizedBox(
-                      height: 55,
-                      width: MediaQuery.of(context).size.width,
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: hexToColor("#0065A0"),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0))),
-                          onPressed: () async {
-                            setState(() {
-                              showSpinner = true;
-                            });
-                            try {
-                              var user =
-                                  await _auth.createUserWithEmailAndPassword(
-                                email: email,
-                                password: password,
-                              );
-                              var docID = (DateTime.now()
-                                  .toString()
-                                  .replaceAll(" ", "_"));
-                              await _firestore.doc(docID).set({
-                                "userEmailID": user.user?.email,
-                                "userUID": user.user?.uid,
-                                "sabhaCode": code,
-                              }).whenComplete(
-                                () => {
-                                  Navigator.pushNamed(context, Login.id),
-                                  setState(
-                                    () {
-                                      showSpinner = false;
-                                    },
-                                  )
-                                },
-                              );
-                            } catch (e) {
-                              print(e);
-                            } finally {
-                              setState(() {
-                                showSpinner = false;
-                                password = "";
-                              });
-                            }
-                          },
-                          child: Text(
-                            "Register",
-                            style: kGoogleStyleTexts.copyWith(
-                                color: Colors.white, fontSize: 18.0),
-                          )),
-                    )
                   ],
                 ),
               ),
+              const SizedBox(
+                height: 15,
+              ),
+              SizedBox(
+                height: 55,
+                width: MediaQuery.of(context).size.width,
+                child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: hexToColor("#0065A0"),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0))),
+                    onPressed: () async {
+                      setState(() {
+                        showSpinner = true;
+                      });
+                      try {
+                        var user = await _auth.createUserWithEmailAndPassword(
+                          email: emailController.text,
+                          password: passwordController.text,
+                        );
+                        var docID =
+                            (DateTime.now().toString().replaceAll(" ", "_"));
+                        await _firestore.doc(docID).set({
+                          "userEmailID": user.user?.email,
+                          "userUID": user.user?.uid,
+                          "sabhaCode": codeController.text,
+                        }).whenComplete(
+                          () => {
+                            Navigator.pushNamed(context, Login.id),
+                            setState(
+                              () {
+                                showSpinner = false;
+                              },
+                            )
+                          },
+                        );
+                      } catch (e) {
+                        if (kDebugMode) {
+                          print(e);
+                        }
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(SnackBar(
+                          content: Text(e.toString()),
+                        ));
+                      } finally {
+                        setState(() {
+                          showSpinner = false;
+                          passwordController.text = "";
+                        });
+                      }
+                    },
+                    child: Text(
+                      "Register",
+                      style: kGoogleStyleTexts.copyWith(
+                          color: Colors.white, fontSize: 18.0),
+                    )),
+              )
             ],
           ),
         ),

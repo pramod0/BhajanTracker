@@ -22,20 +22,21 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   TextStyle kGoogleStyleTexts = GoogleFonts.nunito(
       fontWeight: FontWeight.w600, color: Colors.black, fontSize: 20.0);
-
+  final _formKey = GlobalKey<FormState>();
   bool showSpinner = false;
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
 
   final TextEditingController userNameController =
-      TextEditingController(text: "GK0808");
+      TextEditingController(text: "SY0406");
   final TextEditingController passwordController =
-      TextEditingController(text: "gsh#RH3jA");
+      TextEditingController(text: "amit@123");
   bool showspinner = false;
   bool _showPassword = false;
-  late String code = "GK0808";
-  late String emailOrCode = "shubhamdathia7257@gmail.com";
-  late String password = "gsh#RH3jA";
+
+  // late String code = "GK0808";
+  // late String emailOrCode = "GK0808";
+  // late String password = "gsh#RH3jA";
 
   Set<String> usersEmailSet = HashSet();
   static final Map<String, String> usersDocList = {
@@ -50,11 +51,11 @@ class _LoginState extends State<Login> {
     });
   }
 
-  Future<bool> isEmail(String em) async {
+  bool isEmail(String em) {
     Pattern pattern =
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regex = RegExp(pattern.toString());
-    return await (regex.hasMatch(em)) ? true : false;
+    return ((regex.hasMatch(em)) ? true : false);
   }
 
   @override
@@ -68,114 +69,131 @@ class _LoginState extends State<Login> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10.0),
-                child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Sabha Code/ Email ID",
-                      style: kGoogleStyleTexts.copyWith(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 16,
-                        color: hexToColor("#0091E6"),
-                      ),
-                    )),
-              ),
-              SizedBox(
-                height: 45.0,
-                child: TextFormField(
-                    textInputAction: TextInputAction.next,
-                    controller: userNameController,
-                    onSaved: (val) => emailOrCode = val!,
-                    keyboardType: TextInputType.emailAddress,
-                    style: kGoogleStyleTexts.copyWith(
-                        color: hexToColor("#0065A0"), fontSize: 15.0),
-                    maxLines: 1,
-                    decoration: InputDecoration(
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 15),
-                      border: InputBorder.none,
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide(
-                          color: hexToColor("#0065A0"),
-                          width: 1.0,
+            children: [
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10.0),
+                      child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "Sabha Code/ Email ID",
+                            style: kGoogleStyleTexts.copyWith(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                              color: hexToColor("#0091E6"),
+                            ),
+                          )),
+                    ),
+                    SizedBox(
+                      height: 45.0,
+                      child: TextFormField(
+                          textInputAction: TextInputAction.next,
+                          controller: userNameController,
+                          onSaved: (val) =>
+                          {
+                            userNameController.text = val!,
+                          },
+                          keyboardType: TextInputType.emailAddress,
+                          style: kGoogleStyleTexts.copyWith(
+                              color: hexToColor("#ffffff"), fontSize: 15.0),
+                          maxLines: 1,
+                          decoration: InputDecoration(
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 15),
+                            border: InputBorder.none,
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide: BorderSide(
+                                color: hexToColor("#0065A0"),
+                                width: 1.0,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(10.0)),
+                                borderSide:
+                                    BorderSide(color: hexToColor("#0065A0"))),
+                            fillColor: const Color.fromARGB(30, 173, 205, 219),
+                            filled: true,
+                            hintText: AppStrings.userEmailHintText,
+                            hintStyle: kGoogleStyleTexts.copyWith(
+                                color: hexToColor("#5F93B1"),
+                                fontSize: 15,
+                                fontWeight: FontWeight.normal),
+                          )),
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10.0),
+                      child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            AppStrings.userPassword,
+                            style: kGoogleStyleTexts.copyWith(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                              color: hexToColor("#0091E6"),
+                            ),
+                          )),
+                    ),
+                    SizedBox(
+                      height: 45.0,
+                      child: TextFormField(
+                        textInputAction: TextInputAction.done,
+                        textAlign: TextAlign.justify,
+                        controller: passwordController,
+                        onSaved: (val) => {
+                        passwordController.text = val!,
+                        },
+                        keyboardType: TextInputType.text,
+                        style: kGoogleStyleTexts.copyWith(
+                            color: hexToColor("#ffffff"), fontSize: 15.0),
+                        maxLines: 1,
+                        obscureText: !_showPassword,
+                        decoration: InputDecoration(
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 15),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(
+                              color: hexToColor("#0065A0"),
+                              width: 1.0,
+                            ),
+                          ),
+                          border: InputBorder.none,
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(5.0)),
+                              borderSide:
+                                  BorderSide(color: hexToColor("#0065A0"))),
+                          fillColor: const Color.fromARGB(30, 173, 205, 219),
+                          suffixIcon: GestureDetector(
+                            onTap: () {
+                              _toggleVisibility();
+                            },
+                            child: Icon(
+                              _showPassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: hexToColor("#0065A0"),
+                              size: 22,
+                            ),
+                          ),
+                          filled: true,
+                          hintText: AppStrings.userPasswordHintText,
+                          hintStyle: kGoogleStyleTexts.copyWith(
+                              color: hexToColor("#5F93B1"),
+                              fontSize: 15,
+                              fontWeight: FontWeight.normal),
                         ),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10.0)),
-                          borderSide: BorderSide(color: hexToColor("#0065A0"))),
-                      fillColor: const Color.fromARGB(30, 173, 205, 219),
-                      filled: true,
-                      hintText: AppStrings.userEmailHintText,
-                      hintStyle: kGoogleStyleTexts.copyWith(
-                          color: hexToColor("#5F93B1"),
-                          fontSize: 15,
-                          fontWeight: FontWeight.normal),
-                    )),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10.0),
-                child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      AppStrings.userPassword,
-                      style: kGoogleStyleTexts.copyWith(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 16,
-                        color: hexToColor("#0091E6"),
-                      ),
-                    )),
-              ),
-              SizedBox(
-                height: 45.0,
-                child: TextFormField(
-                  textInputAction: TextInputAction.done,
-                  textAlign: TextAlign.justify,
-                  controller: passwordController,
-                  onSaved: (val) => password = val!,
-                  keyboardType: TextInputType.text,
-                  style: kGoogleStyleTexts.copyWith(
-                      color: hexToColor("#0065A0"), fontSize: 15.0),
-                  maxLines: 1,
-                  obscureText: !_showPassword,
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 15),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide(
-                        color: hexToColor("#0065A0"),
-                        width: 1.0,
-                      ),
                     ),
-                    border: InputBorder.none,
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(5.0)),
-                        borderSide: BorderSide(color: hexToColor("#0065A0"))),
-                    fillColor: const Color.fromARGB(30, 173, 205, 219),
-                    suffixIcon: GestureDetector(
-                      onTap: () {
-                        _toggleVisibility();
-                      },
-                      child: Icon(
-                        _showPassword ? Icons.visibility_off : Icons.visibility,
-                        color: hexToColor("#0065A0"),
-                        size: 22,
-                      ),
-                    ),
-                    filled: true,
-                    hintText: AppStrings.userPasswordHintText,
-                    hintStyle: kGoogleStyleTexts.copyWith(
-                        color: hexToColor("#5F93B1"),
-                        fontSize: 15,
-                        fontWeight: FontWeight.normal),
-                  ),
+                  ],
                 ),
               ),
               const SizedBox(
@@ -194,21 +212,23 @@ class _LoginState extends State<Login> {
                         showSpinner = true;
                       });
                       try {
-                        bool iem=await isEmail(emailOrCode);
+                        bool iem = isEmail(userNameController.text);
                         if (kDebugMode) {
                           print("hello$iem");
                         }
-                        if (!iem) {
+                        if (iem) {
                           await _auth
                               .signInWithEmailAndPassword(
-                                email: emailOrCode,
-                                password: password,
+                                email: userNameController.text,
+                                password: passwordController.text,
                               )
-                              .whenComplete(() => {
-                                    Navigator.pushNamed(
-                                        context, BhajanTrack.id),
-                                  },
-                          );
+                              .whenComplete(
+                                () => {
+                                  print(
+                                      "${userNameController.text} ${passwordController.text}"),
+                                  Navigator.pushNamed(context, BhajanTrack.id),
+                                },
+                              );
                         } else {
                           _firestore
                               .collection("users")
@@ -220,21 +240,21 @@ class _LoginState extends State<Login> {
                                 "email": doc["userEmailID"].toString(),
                                 "uid": doc["userUID"].toString()
                               });
-                              if (usersDocList.containsValue(emailOrCode)) {
+                              if (usersDocList
+                                  .containsValue(userNameController.text)) {
+                                var emailOrCode = doc["userEmailID"].toString();
+                                passwordController.text =
+                                    passwordController.text;
+                                print(
+                                    "${userNameController.text} ${passwordController.text}");
                                 if (kDebugMode) {
-                                  print(doc);
+                                  print(doc.data().toString());
                                 }
-                                await _auth
-                                    .signInWithEmailAndPassword(
-                                      email: doc["userEmailID"],
-                                      password: password,
-                                    )
-                                    .whenComplete(
-                                      () => {
-                                        Navigator.pushNamed(
-                                            context, BhajanTrack.id),
-                                      },
-                                    );
+                                await _auth.signInWithEmailAndPassword(
+                                  email: emailOrCode.toString(),
+                                  password: passwordController.text,
+                                );
+                                Navigator.pushNamed(context, BhajanTrack.id);
                               }
                             }
                           });
@@ -261,7 +281,7 @@ class _LoginState extends State<Login> {
                       } finally {
                         setState(() {
                           showSpinner = false;
-                          password = "";
+                          passwordController.text = "";
                         });
                       }
                     },
