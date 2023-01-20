@@ -1,7 +1,7 @@
 import 'dart:collection';
-
-import 'package:bhajantracker/bhajanTracker.dart';
-import 'package:bhajantracker/registration.dart';
+import 'package:bhajantracker/screens/addBhajan.dart';
+import 'package:bhajantracker/screens/registration.dart';
+import '../../utils/networkutility.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:bhajantracker/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   static const String id = 'login_screen';
@@ -20,9 +21,11 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final prefs = SharedPreferences.getInstance();
   TextStyle kGoogleStyleTexts = GoogleFonts.nunito(
       fontWeight: FontWeight.w600, color: Colors.black, fontSize: 20.0);
   final _formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
   bool showSpinner = false;
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
@@ -31,19 +34,132 @@ class _LoginState extends State<Login> {
       TextEditingController(text: "SY0406");
   final TextEditingController passwordController =
       TextEditingController(text: "amit@123");
-  bool showspinner = false;
+  // bool showspinner = false;
   bool _showPassword = false;
 
-  // late String code = "GK0808";
-  // late String emailOrCode = "GK0808";
-  // late String password = "gsh#RH3jA";
+  /// Check If Document Exists
+  Future<String> checkIfCodeExists(String code) async {
+    // Get reference to Firestore collection
+    String eml = "";
+    var collectionRef = _firestore.collection("users").get();
+    await collectionRef
+        .then((value) => value.docs.asMap().values.forEach((element) {
+              var tCode = element.get("sabhaCode");
+              if (kDebugMode) {
+                print(tCode);
+                print(code.compareTo(tCode));
+              }
+              if (code.compareTo(tCode) == 0) {
+                eml = element.get("userEmailID");
+              }
+            }))
+        .whenComplete(() => {
+              print("All Done"),
+            });
+    return eml;
+  }
+
+  void isLoggedIn() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    String? uid = pref.getString('uid');
+    if (uid != null) {
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => const BhajanTrack()));
+    }
+  }
 
   Set<String> usersEmailSet = HashSet();
-  static final Map<String, String> usersDocList = {
-    "code": "",
-    "email": "",
-    "uid": ""
-  };
+  // static final Map<String, String> usersDocList = {
+  //   "code": "",
+  //   "email": "",
+  //   "uid": ""
+  // };
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    isLoggedIn();
+    super.initState();
+  }
+
+  showSnackBar(String text, Color color) {
+    _scaffoldKey.currentState
+        ?.showSnackBar(SnackBar(content: Text(text), backgroundColor: color));
+  }
+
+  login() async {
+    bool connectionResult = await NetWorkUtil().checkInternetConnection();
+    if (!connectionResult) {
+      showSnackBar("No Internet Connection", Colors.red);
+      return;
+    }
+    try {
+      setState(() {
+        showSpinner = true;
+      });
+      bool iem = isEmail(userNameController.text);
+      if (kDebugMode) {
+        print("hello$iem");
+      }
+      if (iem) {
+        var userCred = await _auth.signInWithEmailAndPassword(
+          email: userNameController.text,
+          password: passwordController.text,
+        );
+        print("${userNameController.text} ${passwordController.text}");
+
+        Navigator.pushNamed(context, BhajanTrack.id);
+        var emailID = userCred.user?.email.toString();
+        var uid = userCred.user?.uid.toString();
+
+        prefs.then((pref) => pref.setString('emailID', emailID!));
+        prefs.then((pref) => pref.setString('uid', uid!));
+      } else {
+        String? emailOrCode = await checkIfCodeExists(userNameController.text);
+        if (kDebugMode) {
+          print(
+              "$emailOrCode ${userNameController.text} ${passwordController.text}");
+        }
+        if (emailOrCode != "") {
+          var userCred = await _auth.signInWithEmailAndPassword(
+            email: emailOrCode.toString(),
+            password: passwordController.text,
+          );
+          String? uid = userCred.user?.email.toString();
+          Navigator.pushNamed(context, BhajanTrack.id);
+          if (kDebugMode) {
+            print(userCred.additionalUserInfo?.username);
+          }
+          prefs.then(
+              (pref) => pref.setString('emailID', emailOrCode.toString()));
+          prefs.then((pref) => pref.setString('UID', uid!));
+        }
+      }
+      //_auth.setPersistence(Persistence.LOCAL);
+
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        String errorMessage = "No user exists with this email/code.";
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(errorMessage),
+        ));
+      } else if (e.code == 'wrong-password') {
+        String errorMessage = "The password is incorrect.";
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(errorMessage),
+        ));
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    } finally {
+      setState(() {
+        showSpinner = false;
+        passwordController.text = "";
+      });
+    }
+  }
 
   void _toggleVisibility() {
     setState(() {
@@ -92,10 +208,9 @@ class _LoginState extends State<Login> {
                       child: TextFormField(
                           textInputAction: TextInputAction.next,
                           controller: userNameController,
-                          onSaved: (val) =>
-                          {
-                            userNameController.text = val!,
-                          },
+                          onSaved: (val) => {
+                                userNameController.text = val!,
+                              },
                           keyboardType: TextInputType.emailAddress,
                           style: kGoogleStyleTexts.copyWith(
                               color: hexToColor("#ffffff"), fontSize: 15.0),
@@ -148,7 +263,7 @@ class _LoginState extends State<Login> {
                         textAlign: TextAlign.justify,
                         controller: passwordController,
                         onSaved: (val) => {
-                        passwordController.text = val!,
+                          passwordController.text = val!,
                         },
                         keyboardType: TextInputType.text,
                         style: kGoogleStyleTexts.copyWith(
@@ -207,84 +322,7 @@ class _LoginState extends State<Login> {
                         backgroundColor: hexToColor("#0065A0"),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0))),
-                    onPressed: () async {
-                      setState(() {
-                        showSpinner = true;
-                      });
-                      try {
-                        bool iem = isEmail(userNameController.text);
-                        if (kDebugMode) {
-                          print("hello$iem");
-                        }
-                        if (iem) {
-                          await _auth
-                              .signInWithEmailAndPassword(
-                                email: userNameController.text,
-                                password: passwordController.text,
-                              )
-                              .whenComplete(
-                                () => {
-                                  print(
-                                      "${userNameController.text} ${passwordController.text}"),
-                                  Navigator.pushNamed(context, BhajanTrack.id),
-                                },
-                              );
-                        } else {
-                          _firestore
-                              .collection("users")
-                              .get()
-                              .then((QuerySnapshot querySnapshot) async {
-                            for (var doc in querySnapshot.docs) {
-                              usersDocList.addAll({
-                                "code": doc["sabhaCode"].toString(),
-                                "email": doc["userEmailID"].toString(),
-                                "uid": doc["userUID"].toString()
-                              });
-                              if (usersDocList
-                                  .containsValue(userNameController.text)) {
-                                var emailOrCode = doc["userEmailID"].toString();
-                                passwordController.text =
-                                    passwordController.text;
-                                print(
-                                    "${userNameController.text} ${passwordController.text}");
-                                if (kDebugMode) {
-                                  print(doc.data().toString());
-                                }
-                                await _auth.signInWithEmailAndPassword(
-                                  email: emailOrCode.toString(),
-                                  password: passwordController.text,
-                                );
-                                Navigator.pushNamed(context, BhajanTrack.id);
-                              }
-                            }
-                          });
-                        }
-                        //_auth.setPersistence(Persistence.LOCAL);
-
-                      } on FirebaseAuthException catch (e) {
-                        if (e.code == 'user-not-found') {
-                          String errorMessage =
-                              "No user exists with this email/code.";
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text(errorMessage),
-                          ));
-                        } else if (e.code == 'wrong-password') {
-                          String errorMessage = "The password is incorrect.";
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text(errorMessage),
-                          ));
-                        }
-                      } catch (e) {
-                        if (kDebugMode) {
-                          print(e);
-                        }
-                      } finally {
-                        setState(() {
-                          showSpinner = false;
-                          passwordController.text = "";
-                        });
-                      }
-                    },
+                    onPressed: login,
                     child: Text(
                       "Login",
                       style: kGoogleStyleTexts.copyWith(

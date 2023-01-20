@@ -7,7 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
-import 'bhajanTracker.dart';
+import '../screens/addBhajan.dart';
 import 'login.dart';
 
 class Registration extends StatefulWidget {
@@ -287,8 +287,7 @@ class _RegistrationState extends State<Registration> {
                           email: emailController.text,
                           password: passwordController.text,
                         );
-                        var docID =
-                            (DateTime.now().toString().replaceAll(" ", "_"));
+                        var docID = user.user?.uid;
                         await _firestore.doc(docID).set({
                           "userEmailID": user.user?.email,
                           "userUID": user.user?.uid,
@@ -307,8 +306,7 @@ class _RegistrationState extends State<Registration> {
                         if (kDebugMode) {
                           print(e);
                         }
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(SnackBar(
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text(e.toString()),
                         ));
                       } finally {

@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'login.dart';
-import 'registration.dart';
+import '/screens/login.dart';
+import '/screens/registration.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:bhajantracker/constants.dart';
 
@@ -15,8 +15,7 @@ class Welcome extends StatefulWidget {
   _WelcomeState createState() => _WelcomeState();
 }
 
-class _WelcomeState extends State<Welcome>
-    with SingleTickerProviderStateMixin {
+class _WelcomeState extends State<Welcome> with SingleTickerProviderStateMixin {
   late AnimationController controller;
   late Animation animation;
 
@@ -29,6 +28,7 @@ class _WelcomeState extends State<Welcome>
     animation = ColorTween(begin: Colors.blueGrey, end: Colors.white)
         .animate(controller);
     controller.forward();
+
     controller.addListener(() {
       setState(() {});
     });
@@ -42,9 +42,10 @@ class _WelcomeState extends State<Welcome>
 
   Future<bool> _onBackPressed() async {
     return await showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (context)=> exit(0),);
+      barrierDismissible: false,
+      context: context,
+      builder: (context) => exit(0),
+    );
   }
 
   @override

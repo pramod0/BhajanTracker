@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:bhajantracker/welcome.dart';
+import 'package:bhajantracker/screens/welcome.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'constants.dart';
+import '../constants.dart';
 
 TextStyle kGoogleStyleTexts = GoogleFonts.nunito(
     fontWeight: FontWeight.w600, color: Colors.black, fontSize: 20.0);
@@ -20,8 +20,8 @@ class ExitDialog extends StatelessWidget {
       backgroundColor: hexToColor("#F5F5F5"),
       title: Text(
         "Exit App",
-        style: kGoogleStyleTexts
-            .copyWith(color: Colors.black87, fontSize: 18.0),
+        style:
+            kGoogleStyleTexts.copyWith(color: Colors.black87, fontSize: 18.0),
       ),
       content: Builder(
         builder: (context) {
@@ -32,12 +32,12 @@ class ExitDialog extends StatelessWidget {
               children: [
                 Text(
                   "Are you sure you want to exit the app?",
-                  style: kGoogleStyleTexts
-                      .copyWith(color: Colors.black87, fontSize: 15.0),
+                  style: kGoogleStyleTexts.copyWith(
+                      color: Colors.black87, fontSize: 15.0),
                 ),
                 Padding(
                   padding:
-                  const EdgeInsets.only(left: 15, right: 15.0, top: 15.0),
+                      const EdgeInsets.only(left: 15, right: 15.0, top: 15.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
